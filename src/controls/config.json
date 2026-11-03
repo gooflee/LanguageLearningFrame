@@ -1,0 +1,15 @@
+{
+  "name": "Sticky Button, Touch & Swipe Controls",
+  "category": "logic",
+  "description": "Handles Seeed Studio reTerminal Sticky physical buttons (GPIO 4 AI, GPIO 5 UP, GPIO 6 DOWN), touchscreen tap events, and back/forward edge swipes.",
+  "fields": [
+    {
+      "name": "action",
+      "type": "select",
+      "label": "Action",
+      "options": ["auto", "prev", "next", "flip", "cycleLang"],
+      "value": "auto"
+    }
+  ],
+  "output": []
+}

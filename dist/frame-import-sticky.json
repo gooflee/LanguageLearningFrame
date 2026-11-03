@@ -1,0 +1,479 @@
+{
+  "name": "Language Learning Sticky",
+  "frame_host": "sticky.local",
+  "server_host": "localhost:8989",
+  "device": "waveshare.EPD_3in97",
+  "mode": "embedded",
+  "platform": "esp32-s3",
+  "width": 800,
+  "height": 480,
+  "interval": 900,
+  "color_mode": "black-white",
+  "embedded": {
+    "platform": "esp32-s3",
+    "flashSize": "32MB",
+    "hardwarePreset": "seeed_reterminal_sticky",
+    "renderMode": "local",
+    "deepSleep": false,
+    "deepSleepOnBattery": true,
+    "wakeCheckSeconds": 300
+  },
+  "device_config": {
+    "hardwarePreset": "seeed_reterminal_sticky",
+    "rstPin": 17,
+    "dcPin": 16,
+    "csPin": 15,
+    "cs2Pin": -1,
+    "busyPin": 18,
+    "sckPin": 13,
+    "mosiPin": 14,
+    "pwrPin": 47
+  },
+  "gpio_buttons": [
+    {
+      "pin": 4,
+      "label": "AI"
+    },
+    {
+      "pin": 5,
+      "label": "UP"
+    },
+    {
+      "pin": 6,
+      "label": "DOWN"
+    }
+  ],
+  "scenes": [
+    {
+      "id": "language-learning-sticky-v1",
+      "name": "Language Learning Sticky (800x480)",
+      "settings": {
+        "execution": "interpreted",
+        "refreshInterval": 900,
+        "backgroundColor": "#ffffff",
+        "renderScale": 1
+      },
+      "fields": [
+        {
+          "name": "refreshInterval",
+          "type": "float",
+          "label": "Refresh interval (seconds)",
+          "value": "900",
+          "access": "public",
+          "persist": "disk",
+          "role": "refreshInterval"
+        },
+        {
+          "name": "language",
+          "type": "select",
+          "label": "Target Language",
+          "value": "es",
+          "options": [
+            {
+              "value": "es",
+              "label": "Spanish (Español)"
+            },
+            {
+              "value": "fr",
+              "label": "French (Français)"
+            },
+            {
+              "value": "de",
+              "label": "German (Deutsch)"
+            },
+            {
+              "value": "ja",
+              "label": "Japanese (Nihongo / 日本語)"
+            },
+            {
+              "value": "ko",
+              "label": "Korean (Hangugo / 한국어)"
+            }
+          ],
+          "access": "public",
+          "persist": "disk"
+        },
+        {
+          "name": "mode",
+          "type": "select",
+          "label": "Study Mode",
+          "value": "flashcard",
+          "options": [
+            {
+              "value": "flashcard",
+              "label": "Interactive Flashcard"
+            },
+            {
+              "value": "wordOfTheDay",
+              "label": "Word of the Day (Always Revealed)"
+            }
+          ],
+          "access": "public",
+          "persist": "disk"
+        },
+        {
+          "name": "showReading",
+          "type": "boolean",
+          "label": "Show Phonetic Reading / Romaji",
+          "value": "true",
+          "access": "public",
+          "persist": "disk"
+        },
+        {
+          "name": "useNativeCjk",
+          "type": "boolean",
+          "label": "Use Native CJK Characters (Requires CJK Font Uploaded)",
+          "value": "false",
+          "access": "public",
+          "persist": "disk"
+        },
+        {
+          "name": "cardIndex",
+          "type": "integer",
+          "label": "Current Card Index",
+          "value": "0",
+          "access": "public",
+          "persist": "disk"
+        },
+        {
+          "name": "revealed",
+          "type": "boolean",
+          "label": "Answer Revealed",
+          "value": "false",
+          "access": "public",
+          "persist": "disk"
+        }
+      ],
+      "nodes": [
+        {
+          "id": "event_render",
+          "type": "event",
+          "position": {
+            "x": 80,
+            "y": 120
+          },
+          "data": {
+            "keyword": "render"
+          }
+        },
+        {
+          "id": "app_language_card",
+          "type": "app",
+          "position": {
+            "x": 80,
+            "y": 280
+          },
+          "data": {
+            "keyword": "languageCard",
+            "config": {
+              "defaultLanguage": "es"
+            }
+          }
+        },
+        {
+          "id": "render_main",
+          "type": "app",
+          "position": {
+            "x": 380,
+            "y": 120
+          },
+          "data": {
+            "keyword": "render/image",
+            "config": {
+              "placement": "cover"
+            }
+          }
+        },
+        {
+          "id": "event_button",
+          "type": "event",
+          "position": {
+            "x": 80,
+            "y": 480
+          },
+          "data": {
+            "keyword": "button"
+          }
+        },
+        {
+          "id": "logic_button",
+          "type": "app",
+          "position": {
+            "x": 340,
+            "y": 480
+          },
+          "data": {
+            "keyword": "stickyControls",
+            "config": {
+              "action": "auto"
+            }
+          }
+        },
+        {
+          "id": "dispatch_render_button",
+          "type": "dispatch",
+          "position": {
+            "x": 620,
+            "y": 480
+          },
+          "data": {
+            "keyword": "render",
+            "config": {}
+          }
+        },
+        {
+          "id": "event_back",
+          "type": "event",
+          "position": {
+            "x": 80,
+            "y": 640
+          },
+          "data": {
+            "keyword": "back"
+          }
+        },
+        {
+          "id": "logic_back",
+          "type": "app",
+          "position": {
+            "x": 340,
+            "y": 640
+          },
+          "data": {
+            "keyword": "stickyControls",
+            "config": {
+              "action": "prev"
+            }
+          }
+        },
+        {
+          "id": "dispatch_render_back",
+          "type": "dispatch",
+          "position": {
+            "x": 620,
+            "y": 640
+          },
+          "data": {
+            "keyword": "render",
+            "config": {}
+          }
+        },
+        {
+          "id": "event_forward",
+          "type": "event",
+          "position": {
+            "x": 80,
+            "y": 800
+          },
+          "data": {
+            "keyword": "forward"
+          }
+        },
+        {
+          "id": "logic_forward",
+          "type": "app",
+          "position": {
+            "x": 340,
+            "y": 800
+          },
+          "data": {
+            "keyword": "stickyControls",
+            "config": {
+              "action": "next"
+            }
+          }
+        },
+        {
+          "id": "dispatch_render_forward",
+          "type": "dispatch",
+          "position": {
+            "x": 620,
+            "y": 800
+          },
+          "data": {
+            "keyword": "render",
+            "config": {}
+          }
+        },
+        {
+          "id": "event_tap",
+          "type": "event",
+          "position": {
+            "x": 80,
+            "y": 960
+          },
+          "data": {
+            "keyword": "tap"
+          }
+        },
+        {
+          "id": "logic_tap",
+          "type": "app",
+          "position": {
+            "x": 340,
+            "y": 960
+          },
+          "data": {
+            "keyword": "stickyControls",
+            "config": {
+              "action": "auto"
+            }
+          }
+        },
+        {
+          "id": "dispatch_render_tap",
+          "type": "dispatch",
+          "position": {
+            "x": 620,
+            "y": 960
+          },
+          "data": {
+            "keyword": "render",
+            "config": {}
+          }
+        }
+      ],
+      "edges": [
+        {
+          "id": "edge_render_flow",
+          "source": "event_render",
+          "sourceHandle": "next",
+          "target": "render_main",
+          "targetHandle": "prev",
+          "type": "appNodeEdge"
+        },
+        {
+          "id": "edge_card_image",
+          "source": "app_language_card",
+          "sourceHandle": "fieldOutput",
+          "target": "render_main",
+          "targetHandle": "fieldInput/image",
+          "type": "codeNodeEdge"
+        },
+        {
+          "id": "edge_button_to_logic",
+          "source": "event_button",
+          "sourceHandle": "next",
+          "target": "logic_button",
+          "targetHandle": "prev",
+          "type": "appNodeEdge"
+        },
+        {
+          "id": "edge_button_to_render",
+          "source": "logic_button",
+          "sourceHandle": "next",
+          "target": "dispatch_render_button",
+          "targetHandle": "prev",
+          "type": "appNodeEdge"
+        },
+        {
+          "id": "edge_back_to_logic",
+          "source": "event_back",
+          "sourceHandle": "next",
+          "target": "logic_back",
+          "targetHandle": "prev",
+          "type": "appNodeEdge"
+        },
+        {
+          "id": "edge_back_to_render",
+          "source": "logic_back",
+          "sourceHandle": "next",
+          "target": "dispatch_render_back",
+          "targetHandle": "prev",
+          "type": "appNodeEdge"
+        },
+        {
+          "id": "edge_forward_to_logic",
+          "source": "event_forward",
+          "sourceHandle": "next",
+          "target": "logic_forward",
+          "targetHandle": "prev",
+          "type": "appNodeEdge"
+        },
+        {
+          "id": "edge_forward_to_render",
+          "source": "logic_forward",
+          "sourceHandle": "next",
+          "target": "dispatch_render_forward",
+          "targetHandle": "prev",
+          "type": "appNodeEdge"
+        },
+        {
+          "id": "edge_tap_to_logic",
+          "source": "event_tap",
+          "sourceHandle": "next",
+          "target": "logic_tap",
+          "targetHandle": "prev",
+          "type": "appNodeEdge"
+        },
+        {
+          "id": "edge_tap_to_render",
+          "source": "logic_tap",
+          "sourceHandle": "next",
+          "target": "dispatch_render_tap",
+          "targetHandle": "prev",
+          "type": "appNodeEdge"
+        }
+      ],
+      "apps": {
+        "languageCard": {
+          "name": "Language Learning Card",
+          "category": "data",
+          "description": "High-contrast e-ink language learning flashcard and daily vocabulary view tailored for the Seeed Studio reTerminal Sticky (800x480).",
+          "fields": [
+            {
+              "name": "defaultLanguage",
+              "type": "select",
+              "label": "Default Language",
+              "options": [
+                "es",
+                "fr",
+                "de",
+                "ja",
+                "ko"
+              ],
+              "value": "es"
+            }
+          ],
+          "output": [
+            {
+              "name": "image",
+              "type": "image"
+            }
+          ],
+          "sources": {
+            "app.tsx": "import { getCard, getDeckCount } from \"./vocab\";\n\nconst DAYS = [\"Sun\", \"Mon\", \"Tue\", \"Wed\", \"Thu\", \"Fri\", \"Sat\"];\nconst MONTHS = [\n  \"Jan\",\n  \"Feb\",\n  \"Mar\",\n  \"Apr\",\n  \"May\",\n  \"Jun\",\n  \"Jul\",\n  \"Aug\",\n  \"Sep\",\n  \"Oct\",\n  \"Nov\",\n  \"Dec\",\n];\n\nfunction formatShortDate(d: Date): string {\n  const dayName = DAYS[d.getDay()] || \"Sun\";\n  const monthName = MONTHS[d.getMonth()] || \"Jan\";\n  return `${dayName}, ${monthName} ${d.getDate()}`;\n}\n\nexport function get(app: FrameOSApp, context: FrameOSContext) {\n  const W = context.imageWidth ?? app.frame.width ?? 800;\n  const H = context.imageHeight ?? app.frame.height ?? 480;\n  const isPortrait = H > W;\n\n  const lang = String(app.state.language || app.config.defaultLanguage || \"es\");\n  const mode = String(app.state.mode || \"flashcard\");\n  const showReading = String(app.state.showReading ?? \"true\") !== \"false\";\n  const useNativeCjk =\n    app.state.useNativeCjk === true || app.state.useNativeCjk === \"true\";\n  const revealed =\n    mode === \"wordOfTheDay\" ||\n    app.state.revealed === true ||\n    app.state.revealed === \"true\";\n\n  // In \"wordOfTheDay\" mode, default to a daily rotating index if cardIndex isn't manually moved\n  const daySeed = Math.floor(Date.now() / 86400000);\n  const rawIndex =\n    app.state.cardIndex !== undefined && app.state.cardIndex !== \"\"\n      ? Number(app.state.cardIndex)\n      : daySeed;\n\n  const card = getCard(lang, isNaN(rawIndex) ? 0 : rawIndex, useNativeCjk);\n\n  // Read node-private mastered set via frameos.recall()\n  const masteredStr = String(frameos.recall(\"mastered\") || \"\");\n  const cardKey = `${lang}:${card.index}`;\n  const isMastered = masteredStr.split(\",\").indexOf(cardKey) !== -1;\n\n  const markJsxTapHandled = () => {\n    const tapId = String(\n      context.payload?.atMs ?? `${context.payload?.x ?? -1},${context.payload?.y ?? -1}`\n    );\n    frameos.setState(\"_jsxTapAt\", tapId);\n  };\n\n  const handlePrev = () => {\n    markJsxTapHandled();\n    const total = getDeckCount(lang);\n    const nextIdx = ((card.index - 1) % total + total) % total;\n    frameos.setState(\"cardIndex\", nextIdx);\n    if (mode === \"flashcard\") {\n      frameos.setState(\"revealed\", false);\n    }\n  };\n\n  const handleNext = () => {\n    markJsxTapHandled();\n    const total = getDeckCount(lang);\n    const nextIdx = (card.index + 1) % total;\n    frameos.setState(\"cardIndex\", nextIdx);\n    if (mode === \"flashcard\") {\n      frameos.setState(\"revealed\", false);\n    }\n  };\n\n  const handleToggleReveal = () => {\n    markJsxTapHandled();\n    frameos.setState(\"revealed\", !revealed);\n  };\n\n  const handleToggleMastered = () => {\n    markJsxTapHandled();\n    const list = masteredStr ? masteredStr.split(\",\").filter(Boolean) : [];\n    const pos = list.indexOf(cardKey);\n    if (pos >= 0) {\n      list.splice(pos, 1);\n    } else {\n      list.push(cardKey);\n    }\n    frameos.remember(\"mastered\", list.join(\",\"));\n  };\n\n  const handleCycleLanguage = () => {\n    markJsxTapHandled();\n    const order = [\"es\", \"fr\", \"de\", \"ja\", \"ko\"];\n    const nextLang = order[(order.indexOf(lang) + 1) % order.length];\n    frameos.setState(\"language\", nextLang);\n    frameos.setState(\"cardIndex\", 0);\n    frameos.setState(\"revealed\", false);\n  };\n\n  const dateLabel = formatShortDate(new Date());\n\n  return (\n    <div className=\"flex flex-col justify-between w-full h-full p-5 bg-white text-black\">\n      {/* Top Header Bar */}\n      <div className=\"flex items-center justify-between border-b-2 border-black pb-3\">\n        <div className=\"flex items-center gap-3\">\n          <div\n            onClick={handleCycleLanguage}\n            className=\"px-3 py-1 bg-black text-white text-sm font-bold uppercase rounded\"\n          >\n            {card.languageLabel} (2x UP)\n          </div>\n          <div className=\"px-2.5 py-0.5 border-2 border-black text-xs font-bold uppercase rounded\">\n            {card.level} • {card.pos}\n          </div>\n          {isMastered ? (\n            <div className=\"flex items-center gap-1.5 px-2.5 py-0.5 bg-slate-200 border border-black text-xs font-bold uppercase rounded\">\n              <svg viewBox=\"0 0 16 16\" className=\"w-3.5 h-3.5\">\n                <polygon\n                  points=\"8,1 10.2,5.5 15.2,6.2 11.6,9.7 12.4,14.7 8,12.3 3.6,14.7 4.4,9.7 0.8,6.2 5.8,5.5\"\n                  fill=\"currentColor\"\n                />\n              </svg>\n              <span>Mastered</span>\n            </div>\n          ) : null}\n        </div>\n\n        <div className=\"flex items-center gap-4 text-sm font-bold\">\n          <span>{dateLabel}</span>\n          <span className=\"px-2.5 py-0.5 border-2 border-black rounded\">\n            {card.index + 1} / {card.total}\n          </span>\n        </div>\n      </div>\n\n      {/* Main Content Area: Branches on Orientation (800x480 Landscape vs 480x800 Portrait) */}\n      <div\n        className={\n          isPortrait\n            ? \"flex flex-col justify-between flex-1 py-4 gap-4\"\n            : \"flex flex-row items-stretch justify-between flex-1 py-4 gap-5\"\n        }\n      >\n        {/* Primary Word Panel */}\n        <div\n          onClick={handleToggleReveal}\n          className=\"flex flex-col justify-center items-center flex-1 p-5 border-2 border-black rounded-xl bg-white\"\n        >\n          <div className=\"text-xs font-bold uppercase text-slate-600 mb-2\">\n            {mode === \"wordOfTheDay\" ? \"Word of the Day\" : \"Tap Card to Flip\"}\n          </div>\n          <div className=\"text-5xl font-bold text-center leading-tight\">\n            {card.word}\n          </div>\n          {showReading ? (\n            <div className=\"text-xl font-semibold text-slate-700 mt-3 text-center\">\n              {card.reading}\n            </div>\n          ) : null}\n        </div>\n\n        {/* Translation & Context Sentence Panel */}\n        <div\n          onClick={handleToggleReveal}\n          className=\"flex flex-col justify-between flex-1 p-5 border-2 border-black rounded-xl bg-slate-100\"\n        >\n          {revealed ? (\n            <div className=\"flex flex-col justify-between h-full\">\n              <div>\n                <div className=\"text-xs font-bold uppercase text-slate-600 mb-1\">\n                  Meaning\n                </div>\n                <div className=\"text-2xl font-bold leading-snug\">\n                  {card.meaning}\n                </div>\n              </div>\n\n              <div className=\"border-t-2 border-black pt-3 mt-3\">\n                <div className=\"text-xs font-bold uppercase text-slate-600 mb-1\">\n                  Example in Context\n                </div>\n                <div className=\"text-lg font-semibold leading-snug\">\n                  {card.example}\n                </div>\n                <div className=\"text-sm text-slate-700 mt-1 italic\">\n                  {card.translation}\n                </div>\n              </div>\n            </div>\n          ) : (\n            <div className=\"flex flex-col items-center justify-center h-full text-center p-4\">\n              <div className=\"text-2xl font-bold mb-2\">[ ? ]</div>\n              <div className=\"text-lg font-bold\">\n                Recall the meaning &amp; example\n              </div>\n              <div className=\"text-sm text-slate-600 mt-2\">\n                Tap card, press AI, or double-press DOWN to reveal\n              </div>\n            </div>\n          )}\n        </div>\n      </div>\n\n      {/* Bottom Touch & Hardware Control Bar */}\n      <div className=\"flex items-center justify-between border-t-2 border-black pt-3 gap-3\">\n        <div\n          onClick={handlePrev}\n          className=\"flex items-center gap-1.5 px-4 py-2 border-2 border-black rounded-lg text-sm font-bold uppercase bg-white\"\n        >\n          <svg viewBox=\"0 0 16 16\" className=\"w-3.5 h-3.5\">\n            <polygon points=\"11,2 4,8 11,14\" fill=\"currentColor\" />\n          </svg>\n          <span>Prev (UP)</span>\n        </div>\n\n        <div className=\"flex items-center gap-2\">\n          <div\n            onClick={handleToggleReveal}\n            className=\"px-5 py-2 bg-black text-white rounded-lg text-sm font-bold uppercase\"\n          >\n            {revealed ? \"Hide Answer (AI / 2x DOWN)\" : \"Reveal (AI / 2x DOWN)\"}\n          </div>\n          <div\n            onClick={handleToggleMastered}\n            className=\"flex items-center gap-1.5 px-4 py-2 border-2 border-black rounded-lg text-sm font-bold uppercase bg-white\"\n          >\n            <svg viewBox=\"0 0 16 16\" className=\"w-3.5 h-3.5\">\n              <polygon\n                points=\"8,1 10.2,5.5 15.2,6.2 11.6,9.7 12.4,14.7 8,12.3 3.6,14.7 4.4,9.7 0.8,6.2 5.8,5.5\"\n                fill={isMastered ? \"currentColor\" : \"none\"}\n                stroke=\"currentColor\"\n                strokeWidth=\"1.5\"\n              />\n            </svg>\n            <span>{isMastered ? \"Saved\" : \"Mark Known\"}</span>\n          </div>\n        </div>\n\n        <div\n          onClick={handleNext}\n          className=\"flex items-center gap-1.5 px-4 py-2 border-2 border-black rounded-lg text-sm font-bold uppercase bg-white\"\n        >\n          <span>Next (DOWN)</span>\n          <svg viewBox=\"0 0 16 16\" className=\"w-3.5 h-3.5\">\n            <polygon points=\"5,2 12,8 5,14\" fill=\"currentColor\" />\n          </svg>\n        </div>\n      </div>\n    </div>\n  );\n}\n",
+            "config.json": "{\n  \"name\": \"Language Learning Card\",\n  \"category\": \"data\",\n  \"description\": \"High-contrast e-ink language learning flashcard and daily vocabulary view tailored for the Seeed Studio reTerminal Sticky (800x480).\",\n  \"fields\": [\n    {\n      \"name\": \"defaultLanguage\",\n      \"type\": \"select\",\n      \"label\": \"Default Language\",\n      \"options\": [\"es\", \"fr\", \"de\", \"ja\", \"ko\"],\n      \"value\": \"es\"\n    }\n  ],\n  \"output\": [\n    {\n      \"name\": \"image\",\n      \"type\": \"image\"\n    }\n  ]\n}\n",
+            "vocab.ts": "// ESP32-friendly compact vocabulary store (see docs/scene-guide.md \"Small frames\"):\n// Stored as newline + pipe-delimited strings:\n// \"wordLatin|wordNative|reading|pos|meaning|exampleLatin|exampleNative|translation|level\"\n// By keeping both Latin/Romaji and Native CJK representations, the scene renders 100%\n// legibly out-of-the-box with FrameOS's built-in Ubuntu font (which lacks CJK glyphs),\n// while also supporting native Kanji/Kana/Hangul when a CJK font is uploaded to FrameOS.\n\nexport interface VocabCard {\n  word: string;\n  reading: string;\n  pos: string;\n  meaning: string;\n  example: string;\n  translation: string;\n  level: string;\n  index: number;\n  total: number;\n  languageLabel: string;\n}\n\nconst LANGUAGE_LABELS_LATIN: Record<string, string> = {\n  ja: \"Japanese (Nihongo)\",\n  es: \"Spanish (Español)\",\n  fr: \"French (Français)\",\n  de: \"German (Deutsch)\",\n  ko: \"Korean (Hangugo)\",\n};\n\nconst LANGUAGE_LABELS_NATIVE: Record<string, string> = {\n  ja: \"Japanese • 日本語\",\n  es: \"Spanish • Español\",\n  fr: \"French • Français\",\n  de: \"German • Deutsch\",\n  ko: \"Korean • 한국어\",\n};\n\nconst DECKS: Record<string, string> = {\n  ja: [\n    \"Komorebi|木漏れ日|ko·mo·re·bi|Noun|Sunlight filtering through trees|Mori no naka de komorebi wo miageta.|森の中で木漏れ日を見上げた。|I looked up at the sunlight filtering through the trees in the forest.|JLPT N3\",\n    \"Natsukashii|懐かしい|na·tsu·ka·shii|Adj|Dearly missed; nostalgic; fond|Kono kyoku wo kiku to gakusei jidai ga natsukashii.|この曲を聴くと学生時代が懐かしい。|Listening to this song makes me nostalgic for my student days.|JLPT N4\",\n    \"Isshoukenmei|一生懸命|is·shou·ken·mei|Adv|With utmost effort; as hard as one can|Kanojo wa mainichi isshoukenmei nihongo wo benkyou shite iru.|彼女は毎日一生懸命日本語を勉強している。|She studies Japanese as hard as she can every day.|JLPT N4\",\n    \"Rinkiouhen|臨機応変|rin·ki·ou·hen|Noun|Adapting to circumstances; playing it by ear|Joukyou ni awasete rinkiouhen ni taiou shimashou.|状況に合わせて臨機応変に対応しましょう。|Let's respond flexibly according to the situation.|JLPT N2\",\n    \"Ichigo-ichie|一期一会|i·chi·go i·chi·e|Idiom|Once-in-a-lifetime encounter|Tabisaki de no deai wo ichigo-ichie toshite taisetsu ni suru.|旅先での出会いを一期一会として大切にする。|Treasure each encounter on a journey as once in a lifetime.|JLPT N2\",\n  ].join(\"\\n\"),\n\n  es: [\n    \"Madrugar|Madrugar|ma·dru·gar|Verb|To wake up / get up early|Mañana tengo que madrugar para tomar el tren.|Mañana tengo que madrugar para tomar el tren.|Tomorrow I have to get up early to catch the train.|CEFR B1\",\n    \"Sobremesa|Sobremesa|so·bre·me·sa|Noun|Time spent chatting at the table after a meal|Hicimos una larga sobremesa con café y amigos.|Hicimos una larga sobremesa con café y amigos.|We had a long after-dinner chat over coffee with friends.|CEFR B2\",\n    \"Aprovechar|Aprovechar|a·pro·ve·char|Verb|To make the most of; take advantage of|Vamos a aprovechar el buen tiempo para caminar.|Vamos a aprovechar el buen tiempo para caminar.|Let's make the most of the good weather to go for a walk.|CEFR A2\",\n    \"Desvelarse|Desvelarse|des·ve·lar·se|Verb|To stay awake; be unable to sleep|Me desvelé leyendo un libro muy interesante.|Me desvelé leyendo un libro muy interesante.|I stayed up late reading a very interesting book.|CEFR B2\",\n    \"Cotidiano|Cotidiano|co·ti·dia·no|Adj|Daily; everyday; routine|Aprender palabras nuevas es parte de mi vida cotidiana.|Aprender palabras nuevas es parte de mi vida cotidiana.|Learning new words is part of my everyday life.|CEFR B1\",\n  ].join(\"\\n\"),\n\n  fr: [\n    \"Dépaysement|Dépaysement|dé·pa·y·se·ment|Noun|Feeling of being in a new/foreign surrounding|Ce voyage au Japon m'a offert un vrai dépaysement.|Ce voyage au Japon m'a offert un vrai dépaysement.|This trip to Japan gave me a true change of scenery.|CEFR B2\",\n    \"Flâner|Flâner|flâ·ner|Verb|To stroll aimlessly and enjoy the surroundings|J'aime flâner dans les petites rues le dimanche.|J'aime flâner dans les petites rues le dimanche.|I love strolling through the narrow streets on Sundays.|CEFR B1\",\n    \"Retrouvailles|Retrouvailles|re·trou·vailles|Noun|Warm reunion after a long separation|Nos retrouvailles à la gare étaient très émouvantes.|Nos retrouvailles à la gare étaient très émouvantes.|Our reunion at the train station was very moving.|CEFR B2\",\n    \"Quotidien|Quotidien|quo·ti·dien|Adj/Noun|Daily; everyday life|Un petit effort quotidien fait une grande différence.|Un petit effort quotidien fait une grande différence.|A small daily effort makes a big difference.|CEFR A2\",\n    \"Épanouir|Épanouir|s'é·pa·nou·ir|Verb|To blossom; thrive; feel fulfilled|Elle s'épanouit pleinement dans son nouveau travail.|Elle s'épanouit pleinement dans son nouveau travail.|She is truly thriving in her new job.|CEFR B2\",\n  ].join(\"\\n\"),\n\n  de: [\n    \"Fernweh|Fernweh|Fern·weh|Noun|Longing for far-off places; wanderlust|Im Herbst bekomme ich immer großes Fernweh.|Im Herbst bekomme ich immer großes Fernweh.|In autumn I always get a strong longing for distant places.|CEFR B1\",\n    \"Feierabend|Feierabend|Fei·er·abend|Noun|End of the workday; evening free time|Nach der Arbeit genieße ich meinen wohlverdienten Feierabend.|Nach der Arbeit genieße ich meinen wohlverdienten Feierabend.|After work I enjoy my well-deserved evening off.|CEFR A2\",\n    \"Fingerspitzengefühl|Fingerspitzengefühl|Fin·ger·spit·zen·ge·fühl|Noun|Tact; intuitive flair; sensitivity|Für diese Verhandlung braucht man viel Fingerspitzengefühl.|Für diese Verhandlung braucht man viel Fingerspitzengefühl.|You need a lot of tact for this negotiation.|CEFR C1\",\n    \"Gemütlichkeit|Gemütlichkeit|Ge·müt·lich·keit|Noun|Warmth, coziness, and good cheer|Das kleine Café strahlt eine wunderbare Gemütlichkeit aus.|Das kleine Café strahlt eine wunderbare Gemütlichkeit aus.|The small café radiates a wonderful coziness.|CEFR B1\",\n    \"Vorfreude|Vorfreude|Vor·freu·de|Noun|Joyful anticipation|Vorfreude ist bekanntlich die schönste Freude.|Vorfreude ist bekanntlich die schönste Freude.|Joyful anticipation is known to be the best joy.|CEFR B1\",\n  ].join(\"\\n\"),\n\n  ko: [\n    \"So-hwak-haeng|소확행|so·hwak·haeng|Noun|Small but certain happiness|Ttatteuthan keopi han jani naui sohwakhaeng-ida.|따뜻한 커피 한 잔이 나의 소확행이다.|A warm cup of coffee is my small but certain happiness.|TOPIK B1\",\n    \"Jeong|정 (情)|jeong|Noun|Deep affection, bond, and warmth developed over time|Orae hamkke ilhamyeonseo dongnyodeulgwa jeongi mani deureotda.|오래 함께 일하면서 동료들과 정이 많이 들었다.|Working together for a long time built a deep bond with my colleagues.|TOPIK B2\",\n    \"Nun-chi|눈치|nun·chi|Noun|Subtle art of reading the room / social awareness|Geu sarameun nunchiga ppallaseo bunwigireul jal paakanda.|그 사람은 눈치가 빨라서 분위기를 잘 파악한다.|He is quick-witted and reads the room well.|TOPIK B1\",\n    \"Seol-le-da|설레다|seol·le·da|Verb|To flutter with excitement; feel heart-fluttering anticipation|Saeroun yeohaengeul tteonagi jeonnal bameun eonjena seollenda.|새로운 여행을 떠나기 전날 밤은 언제나 설렌다.|The night before leaving on a new trip always makes my heart flutter.|TOPIK A2\",\n    \"Kku-jun-hi|꾸준히|kku·jun·hi|Adv|Steadily; consistently; untiringly|Maeil kkujunhi daneoreul oeumyeon sillyeogi neunda.|매일 꾸준히 단어를 외우면 실력이 는다.|If you memorize words steadily every day, your skills will improve.|TOPIK A2\",\n  ].join(\"\\n\"),\n};\n\nexport function getDeckCount(lang: string): number {\n  const raw = DECKS[lang] || DECKS.ja;\n  let count = 1;\n  for (let i = 0; i < raw.length; i++) {\n    if (raw.charCodeAt(i) === 10) count++;\n  }\n  return count;\n}\n\nexport function getCard(\n  lang: string,\n  rawIndex: number,\n  useNativeCjk?: boolean\n): VocabCard {\n  const key = DECKS[lang] ? lang : \"ja\";\n  const lines = DECKS[key].split(\"\\n\");\n  const total = lines.length;\n  const idx = ((rawIndex % total) + total) % total;\n  const parts = lines[idx].split(\"|\");\n\n  const wordLatin = parts[0] || \"\";\n  const wordNative = parts[1] || wordLatin;\n  const reading = parts[2] || \"\";\n  const pos = parts[3] || \"\";\n  const meaning = parts[4] || \"\";\n  const exampleLatin = parts[5] || \"\";\n  const exampleNative = parts[6] || exampleLatin;\n  const translation = parts[7] || \"\";\n  const level = parts[8] || \"\";\n\n  const isCjk = key === \"ja\" || key === \"ko\";\n  const showNative = Boolean(useNativeCjk) && isCjk;\n\n  return {\n    word: showNative ? wordNative : wordLatin,\n    reading: showNative && wordLatin !== wordNative ? `${reading} (${wordLatin})` : reading,\n    pos,\n    meaning,\n    example: showNative ? exampleNative : exampleLatin,\n    translation,\n    level,\n    index: idx,\n    total,\n    languageLabel: showNative\n      ? LANGUAGE_LABELS_NATIVE[key] || LANGUAGE_LABELS_LATIN.ja\n      : LANGUAGE_LABELS_LATIN[key] || LANGUAGE_LABELS_LATIN.ja,\n  };\n}\n"
+          }
+        },
+        "stickyControls": {
+          "name": "Sticky Button, Touch & Swipe Controls",
+          "category": "logic",
+          "description": "Handles Seeed Studio reTerminal Sticky physical buttons (GPIO 4 AI, GPIO 5 UP, GPIO 6 DOWN), touchscreen tap events, and back/forward edge swipes.",
+          "fields": [
+            {
+              "name": "action",
+              "type": "select",
+              "label": "Action",
+              "options": [
+                "auto",
+                "prev",
+                "next",
+                "flip",
+                "cycleLang"
+              ],
+              "value": "auto"
+            }
+          ],
+          "output": [],
+          "sources": {
+            "app.ts": "const DECK_SIZE = 5;\nconst LANG_ORDER = [\"es\", \"fr\", \"de\", \"ja\", \"ko\"];\n\nexport function run(app: FrameOSApp, context: FrameOSContext) {\n  const configuredAction = String(app.config.action || \"auto\");\n  const currentIdx = Number(app.state.cardIndex ?? 0) || 0;\n  const revealed = app.state.revealed === true || app.state.revealed === \"true\";\n  const currentLang = String(app.state.language || \"es\");\n\n  let action = configuredAction;\n\n  if (action === \"auto\") {\n    if (context.event === \"back\") {\n      action = \"prev\";\n    } else if (context.event === \"forward\") {\n      action = \"next\";\n    } else if (context.event === \"button\") {\n      const pin = Number(context.payload?.pin ?? -1);\n      const label = String(context.payload?.label || \"\").toLowerCase();\n      const btnAction = String(context.payload?.action || \"press\");\n      // Seeed Studio reTerminal Sticky preset pins:\n      // GPIO 4 = AI button, GPIO 5 = UP button, GPIO 6 = DOWN button\n      // - Single press UP (5)   -> Previous card\n      // - Single press DOWN (6) -> Next card\n      // - Single press AI (4) or Double-press DOWN (6) -> Flip / Reveal card\n      // - Double-press UP (5) or Double-press AI (4)   -> Cycle language\n      const isUp = pin === 5 || label.indexOf(\"up\") !== -1;\n      const isDown = pin === 6 || label.indexOf(\"down\") !== -1;\n      if (btnAction === \"doublePress\") {\n        action = isUp ? \"cycleLang\" : \"flip\";\n      } else if (isUp) {\n        action = \"prev\";\n      } else if (isDown) {\n        action = \"next\";\n      } else {\n        action = \"flip\";\n      }\n    } else if (context.event === \"tap\") {\n      // If the JSX onClick handler in src/app/app.tsx already ran for this tap,\n      // skip duplicate handling here.\n      const tapId = String(\n        context.payload?.atMs ?? `${context.payload?.x ?? -1},${context.payload?.y ?? -1}`\n      );\n      if (String(app.state._jsxTapAt || \"\") === tapId) {\n        frameos.setState(\"_jsxTapAt\", \"\");\n        return;\n      }\n      // Fallback scene-level tap handler (when QuickJS was released after deep sleep):\n      const x = Number(context.payload?.x ?? -1);\n      const y = Number(context.payload?.y ?? -1);\n      const w = Number(context.payload?.width ?? app.frame.width ?? 800);\n      const h = Number(context.payload?.height ?? app.frame.height ?? 480);\n\n      if (x >= 0 && y >= 0) {\n        if (y < h * 0.16 && x < w * 0.35) {\n          action = \"cycleLang\";\n        } else if (y > h * 0.8) {\n          if (x < w * 0.28) {\n            action = \"prev\";\n          } else if (x > w * 0.72) {\n            action = \"next\";\n          } else {\n            action = \"flip\";\n          }\n        } else {\n          action = \"flip\";\n        }\n      } else {\n        action = \"flip\";\n      }\n    }\n  }\n\n  frameos.log(\n    `[stickyControls] event=${context.event} action=${action} payload=${JSON.stringify(\n      context.payload || {}\n    )} idx=${currentIdx} revealed=${revealed}`\n  );\n\n  if (action === \"prev\") {\n    const prevIdx = ((currentIdx - 1) % DECK_SIZE + DECK_SIZE) % DECK_SIZE;\n    frameos.setState(\"cardIndex\", prevIdx);\n    frameos.setState(\"revealed\", false);\n  } else if (action === \"next\") {\n    const nextIdx = (currentIdx + 1) % DECK_SIZE;\n    frameos.setState(\"cardIndex\", nextIdx);\n    frameos.setState(\"revealed\", false);\n  } else if (action === \"flip\") {\n    frameos.setState(\"revealed\", !revealed);\n  } else if (action === \"cycleLang\") {\n    const nextLang =\n      LANG_ORDER[(LANG_ORDER.indexOf(currentLang) + 1) % LANG_ORDER.length];\n    frameos.setState(\"language\", nextLang);\n    frameos.setState(\"cardIndex\", 0);\n    frameos.setState(\"revealed\", false);\n  }\n}\n",
+            "config.json": "{\n  \"name\": \"Sticky Button, Touch & Swipe Controls\",\n  \"category\": \"logic\",\n  \"description\": \"Handles Seeed Studio reTerminal Sticky physical buttons (GPIO 4 AI, GPIO 5 UP, GPIO 6 DOWN), touchscreen tap events, and back/forward edge swipes.\",\n  \"fields\": [\n    {\n      \"name\": \"action\",\n      \"type\": \"select\",\n      \"label\": \"Action\",\n      \"options\": [\"auto\", \"prev\", \"next\", \"flip\", \"cycleLang\"],\n      \"value\": \"auto\"\n    }\n  ],\n  \"output\": []\n}\n"
+          }
+        }
+      },
+      "customEvents": []
+    }
+  ]
+}

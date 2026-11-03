@@ -1,0 +1,10 @@
+{
+  "name": "Language Learning Sticky (800x480)",
+  "description": "High-contrast e-ink language learning flashcard and Word of the Day scene tailored for the Seeed Studio reTerminal Sticky (800x480).",
+  "scenes": "./scenes.json",
+  "config": {},
+  "image": "./image.jpg",
+  "imageWidth": 800,
+  "imageHeight": 480,
+  "frameosVersion": "2026.10.29"
+}

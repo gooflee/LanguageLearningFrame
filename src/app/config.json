@@ -1,0 +1,20 @@
+{
+  "name": "Language Learning Card",
+  "category": "data",
+  "description": "High-contrast e-ink language learning flashcard and daily vocabulary view tailored for the Seeed Studio reTerminal Sticky (800x480).",
+  "fields": [
+    {
+      "name": "defaultLanguage",
+      "type": "select",
+      "label": "Default Language",
+      "options": ["es", "fr", "de", "ja", "ko"],
+      "value": "es"
+    }
+  ],
+  "output": [
+    {
+      "name": "image",
+      "type": "image"
+    }
+  ]
+}

@@ -1,0 +1,298 @@
+{
+  "id": "language-learning-sticky-v1",
+  "name": "Language Learning Sticky (800x480)",
+  "settings": {
+    "execution": "interpreted",
+    "refreshInterval": 900,
+    "backgroundColor": "#ffffff",
+    "renderScale": 1
+  },
+  "fields": [
+    {
+      "name": "refreshInterval",
+      "type": "float",
+      "label": "Refresh interval (seconds)",
+      "value": "900",
+      "access": "public",
+      "persist": "disk",
+      "role": "refreshInterval"
+    },
+    {
+      "name": "language",
+      "type": "select",
+      "label": "Target Language",
+      "value": "es",
+      "options": [
+        { "value": "es", "label": "Spanish (Español)" },
+        { "value": "fr", "label": "French (Français)" },
+        { "value": "de", "label": "German (Deutsch)" },
+        { "value": "ja", "label": "Japanese (Nihongo / 日本語)" },
+        { "value": "ko", "label": "Korean (Hangugo / 한국어)" }
+      ],
+      "access": "public",
+      "persist": "disk"
+    },
+    {
+      "name": "mode",
+      "type": "select",
+      "label": "Study Mode",
+      "value": "flashcard",
+      "options": [
+        { "value": "flashcard", "label": "Interactive Flashcard" },
+        { "value": "wordOfTheDay", "label": "Word of the Day (Always Revealed)" }
+      ],
+      "access": "public",
+      "persist": "disk"
+    },
+    {
+      "name": "showReading",
+      "type": "boolean",
+      "label": "Show Phonetic Reading / Romaji",
+      "value": "true",
+      "access": "public",
+      "persist": "disk"
+    },
+    {
+      "name": "useNativeCjk",
+      "type": "boolean",
+      "label": "Use Native CJK Characters (Requires CJK Font Uploaded)",
+      "value": "false",
+      "access": "public",
+      "persist": "disk"
+    },
+    {
+      "name": "cardIndex",
+      "type": "integer",
+      "label": "Current Card Index",
+      "value": "0",
+      "access": "public",
+      "persist": "disk"
+    },
+    {
+      "name": "revealed",
+      "type": "boolean",
+      "label": "Answer Revealed",
+      "value": "false",
+      "access": "public",
+      "persist": "disk"
+    }
+  ],
+  "nodes": [
+    {
+      "id": "event_render",
+      "type": "event",
+      "position": { "x": 80, "y": 120 },
+      "data": { "keyword": "render" }
+    },
+    {
+      "id": "app_language_card",
+      "type": "app",
+      "position": { "x": 80, "y": 280 },
+      "data": {
+        "keyword": "languageCard",
+        "config": {
+          "defaultLanguage": "es"
+        }
+      }
+    },
+    {
+      "id": "render_main",
+      "type": "app",
+      "position": { "x": 380, "y": 120 },
+      "data": {
+        "keyword": "render/image",
+        "config": {
+          "placement": "cover"
+        }
+      }
+    },
+    {
+      "id": "event_button",
+      "type": "event",
+      "position": { "x": 80, "y": 480 },
+      "data": { "keyword": "button" }
+    },
+    {
+      "id": "logic_button",
+      "type": "app",
+      "position": { "x": 340, "y": 480 },
+      "data": {
+        "keyword": "stickyControls",
+        "config": {
+          "action": "auto"
+        }
+      }
+    },
+    {
+      "id": "dispatch_render_button",
+      "type": "dispatch",
+      "position": { "x": 620, "y": 480 },
+      "data": {
+        "keyword": "render",
+        "config": {}
+      }
+    },
+    {
+      "id": "event_back",
+      "type": "event",
+      "position": { "x": 80, "y": 640 },
+      "data": { "keyword": "back" }
+    },
+    {
+      "id": "logic_back",
+      "type": "app",
+      "position": { "x": 340, "y": 640 },
+      "data": {
+        "keyword": "stickyControls",
+        "config": {
+          "action": "prev"
+        }
+      }
+    },
+    {
+      "id": "dispatch_render_back",
+      "type": "dispatch",
+      "position": { "x": 620, "y": 640 },
+      "data": {
+        "keyword": "render",
+        "config": {}
+      }
+    },
+    {
+      "id": "event_forward",
+      "type": "event",
+      "position": { "x": 80, "y": 800 },
+      "data": { "keyword": "forward" }
+    },
+    {
+      "id": "logic_forward",
+      "type": "app",
+      "position": { "x": 340, "y": 800 },
+      "data": {
+        "keyword": "stickyControls",
+        "config": {
+          "action": "next"
+        }
+      }
+    },
+    {
+      "id": "dispatch_render_forward",
+      "type": "dispatch",
+      "position": { "x": 620, "y": 800 },
+      "data": {
+        "keyword": "render",
+        "config": {}
+      }
+    },
+    {
+      "id": "event_tap",
+      "type": "event",
+      "position": { "x": 80, "y": 960 },
+      "data": { "keyword": "tap" }
+    },
+    {
+      "id": "logic_tap",
+      "type": "app",
+      "position": { "x": 340, "y": 960 },
+      "data": {
+        "keyword": "stickyControls",
+        "config": {
+          "action": "auto"
+        }
+      }
+    },
+    {
+      "id": "dispatch_render_tap",
+      "type": "dispatch",
+      "position": { "x": 620, "y": 960 },
+      "data": {
+        "keyword": "render",
+        "config": {}
+      }
+    }
+  ],
+  "edges": [
+    {
+      "id": "edge_render_flow",
+      "source": "event_render",
+      "sourceHandle": "next",
+      "target": "render_main",
+      "targetHandle": "prev",
+      "type": "appNodeEdge"
+    },
+    {
+      "id": "edge_card_image",
+      "source": "app_language_card",
+      "sourceHandle": "fieldOutput",
+      "target": "render_main",
+      "targetHandle": "fieldInput/image",
+      "type": "codeNodeEdge"
+    },
+    {
+      "id": "edge_button_to_logic",
+      "source": "event_button",
+      "sourceHandle": "next",
+      "target": "logic_button",
+      "targetHandle": "prev",
+      "type": "appNodeEdge"
+    },
+    {
+      "id": "edge_button_to_render",
+      "source": "logic_button",
+      "sourceHandle": "next",
+      "target": "dispatch_render_button",
+      "targetHandle": "prev",
+      "type": "appNodeEdge"
+    },
+    {
+      "id": "edge_back_to_logic",
+      "source": "event_back",
+      "sourceHandle": "next",
+      "target": "logic_back",
+      "targetHandle": "prev",
+      "type": "appNodeEdge"
+    },
+    {
+      "id": "edge_back_to_render",
+      "source": "logic_back",
+      "sourceHandle": "next",
+      "target": "dispatch_render_back",
+      "targetHandle": "prev",
+      "type": "appNodeEdge"
+    },
+    {
+      "id": "edge_forward_to_logic",
+      "source": "event_forward",
+      "sourceHandle": "next",
+      "target": "logic_forward",
+      "targetHandle": "prev",
+      "type": "appNodeEdge"
+    },
+    {
+      "id": "edge_forward_to_render",
+      "source": "logic_forward",
+      "sourceHandle": "next",
+      "target": "dispatch_render_forward",
+      "targetHandle": "prev",
+      "type": "appNodeEdge"
+    },
+    {
+      "id": "edge_tap_to_logic",
+      "source": "event_tap",
+      "sourceHandle": "next",
+      "target": "logic_tap",
+      "targetHandle": "prev",
+      "type": "appNodeEdge"
+    },
+    {
+      "id": "edge_tap_to_render",
+      "source": "logic_tap",
+      "sourceHandle": "next",
+      "target": "dispatch_render_tap",
+      "targetHandle": "prev",
+      "type": "appNodeEdge"
+    }
+  ],
+  "apps": {},
+  "customEvents": []
+}

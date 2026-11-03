@@ -1,0 +1,743 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>FrameOS Designer — Seeed Studio reTerminal Sticky (800×480 E-Ink)</title>
+  <style>
+    :root {
+      --bg-app: #0f172a;
+      --bg-panel: #1e293b;
+      --border-panel: #334155;
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      --accent: #38bdf8;
+      --paper-bg: #f7f6f2;
+      --ink-black: #141413;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Ubuntu, sans-serif;
+      background: var(--bg-app);
+      color: var(--text-main);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    header {
+      padding: 14px 24px;
+      background: var(--bg-panel);
+      border-bottom: 1px solid var(--border-panel);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .badge {
+      background: #0284c7;
+      color: #fff;
+      font-size: 11px;
+      font-weight: 700;
+      padding: 3px 8px;
+      border-radius: 999px;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    .toolbar {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    button.ctrl-btn, select.ctrl-select {
+      background: #0f172a;
+      color: var(--text-main);
+      border: 1px solid var(--border-panel);
+      padding: 7px 12px;
+      border-radius: 6px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    button.ctrl-btn:hover, select.ctrl-select:hover {
+      border-color: var(--accent);
+    }
+
+    main {
+      flex: 1;
+      display: grid;
+      grid-template-columns: 1fr 340px;
+      gap: 24px;
+      padding: 24px;
+      align-items: start;
+    }
+
+    @media (max-width: 1180px) {
+      main {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .stage {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background: radial-gradient(circle at center, #1e293b 0%, #0f172a 75%);
+      border: 1px solid var(--border-panel);
+      border-radius: 16px;
+      padding: 36px 24px;
+      min-height: 640px;
+    }
+
+    /* Seeed Studio reTerminal Sticky Hardware Enclosure */
+    .sticky-device {
+      position: relative;
+      background: #e2e8f0;
+      border: 3px solid #cbd5e1;
+      border-radius: 22px;
+      padding: 24px 36px 28px 24px;
+      box-shadow:
+        0 24px 48px rgba(0, 0, 0, 0.55),
+        inset 0 2px 4px rgba(255, 255, 255, 0.8);
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      transition: all 0.25s ease;
+    }
+
+    .device-label {
+      position: absolute;
+      bottom: 7px;
+      left: 28px;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      color: #64748b;
+      text-transform: uppercase;
+    }
+
+    /* Physical Side GPIO Keys on Seeed Studio Sticky */
+    .gpio-rail {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      margin-left: 4px;
+    }
+
+    .gpio-btn {
+      width: 44px;
+      padding: 10px 4px;
+      background: #1e293b;
+      color: #f8fafc;
+      border: 2px solid #0f172a;
+      border-radius: 8px;
+      font-size: 10px;
+      font-weight: 800;
+      text-align: center;
+      cursor: pointer;
+      box-shadow: 2px 2px 0 #0f172a;
+      user-select: none;
+    }
+
+    .gpio-btn:active {
+      transform: translate(1px, 1px);
+      box-shadow: 1px 1px 0 #0f172a;
+    }
+
+    .gpio-btn.ai-key {
+      background: #b91c1c;
+      border-color: #7f1d1d;
+    }
+
+    /* 800x480 / 480x800 E-Ink Screen Viewport */
+    .eink-viewport {
+      width: 800px;
+      height: 480px;
+      background: var(--paper-bg);
+      color: var(--ink-black);
+      border: 3px solid #1e293b;
+      border-radius: 6px;
+      overflow: hidden;
+      position: relative;
+      user-select: none;
+      box-shadow: inset 0 0 8px rgba(0, 0, 0, 0.12);
+    }
+
+    .eink-viewport.portrait {
+      width: 480px;
+      height: 800px;
+    }
+
+    /* 1-bit E-Ink Paper Texture & Threshold Modes */
+    .eink-viewport.mode-1bit {
+      filter: grayscale(100%) contrast(260%);
+    }
+
+    .eink-viewport.mode-paper {
+      filter: grayscale(100%) contrast(135%) sepia(8%);
+    }
+
+    /* Simulated E-Ink Flash Refresh */
+    .eink-flash {
+      animation: einkFlash 0.28s ease-out;
+    }
+
+    @keyframes einkFlash {
+      0% { filter: invert(100%) grayscale(100%) contrast(250%); }
+      45% { filter: invert(0%) grayscale(100%) contrast(300%); }
+      100% { filter: grayscale(100%) contrast(150%); }
+    }
+
+    /* FrameOS JSX UI Layout Utility Styles inside E-Ink Viewport */
+    .frame-root {
+      width: 100%;
+      height: 100%;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      background: var(--paper-bg);
+      color: var(--ink-black);
+    }
+
+    .top-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 2px solid var(--ink-black);
+      padding-bottom: 12px;
+    }
+
+    .pill-group {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .pill-solid {
+      padding: 4px 12px;
+      background: var(--ink-black);
+      color: var(--paper-bg);
+      font-size: 14px;
+      font-weight: 800;
+      text-transform: uppercase;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+
+    .pill-outline {
+      padding: 3px 10px;
+      border: 2px solid var(--ink-black);
+      font-size: 12px;
+      font-weight: 800;
+      text-transform: uppercase;
+      border-radius: 4px;
+    }
+
+    .pill-mastered {
+      padding: 3px 10px;
+      background: #d6d3cd;
+      border: 2px solid var(--ink-black);
+      font-size: 12px;
+      font-weight: 800;
+      text-transform: uppercase;
+      border-radius: 4px;
+    }
+
+    .cards-grid {
+      flex: 1;
+      display: flex;
+      flex-direction: row;
+      align-items: stretch;
+      justify-content: space-between;
+      gap: 20px;
+      padding: 16px 0;
+    }
+
+    .eink-viewport.portrait .cards-grid {
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .card-box {
+      flex: 1;
+      border: 2px solid var(--ink-black);
+      border-radius: 12px;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      cursor: pointer;
+      background: #ffffff;
+    }
+
+    .card-box.secondary {
+      background: #eceae4;
+      justify-content: space-between;
+    }
+
+    .card-box.primary {
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+    }
+
+    .section-tag {
+      font-size: 12px;
+      font-weight: 800;
+      text-transform: uppercase;
+      color: #4b5563;
+      margin-bottom: 6px;
+      letter-spacing: 0.04em;
+    }
+
+    .hero-word {
+      font-size: 62px;
+      font-weight: 800;
+      line-height: 1.12;
+      margin: 6px 0;
+    }
+
+    .reading-text {
+      font-size: 20px;
+      font-weight: 700;
+      color: #374151;
+      margin-top: 10px;
+    }
+
+    .meaning-text {
+      font-size: 26px;
+      font-weight: 800;
+      line-height: 1.25;
+    }
+
+    .example-block {
+      border-top: 2px solid var(--ink-black);
+      padding-top: 12px;
+      margin-top: 12px;
+    }
+
+    .example-text {
+      font-size: 18px;
+      font-weight: 700;
+      line-height: 1.35;
+    }
+
+    .translation-text {
+      font-size: 14px;
+      color: #374151;
+      font-style: italic;
+      margin-top: 4px;
+    }
+
+    .bottom-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-top: 2px solid var(--ink-black);
+      padding-top: 12px;
+      gap: 12px;
+    }
+
+    .touch-btn {
+      padding: 9px 16px;
+      border: 2px solid var(--ink-black);
+      border-radius: 8px;
+      background: #ffffff;
+      color: var(--ink-black);
+      font-size: 13px;
+      font-weight: 800;
+      text-transform: uppercase;
+      cursor: pointer;
+    }
+
+    .touch-btn.solid {
+      background: var(--ink-black);
+      color: #ffffff;
+    }
+
+    /* Sidebar Inspector */
+    .inspector {
+      background: var(--bg-panel);
+      border: 1px solid var(--border-panel);
+      border-radius: 16px;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .inspector h2 {
+      font-size: 15px;
+      font-weight: 700;
+      border-bottom: 1px solid var(--border-panel);
+      padding-bottom: 8px;
+    }
+
+    .field-row {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .field-row label {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-muted);
+    }
+
+    .hint-box {
+      background: #0f172a;
+      border: 1px solid var(--border-panel);
+      border-radius: 8px;
+      padding: 12px;
+      font-size: 12px;
+      line-height: 1.5;
+      color: var(--text-muted);
+    }
+
+    .hint-box code {
+      color: var(--accent);
+      font-family: Consolas, monospace;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="brand">
+      <strong>LanguageLearningFrame</strong>
+      <span class="badge">Seeed Studio reTerminal Sticky • 800×480 E-Ink</span>
+    </div>
+    <div class="toolbar">
+      <select id="einkFilterSelect" class="ctrl-select" title="E-Ink Simulation Filter">
+        <option value="mode-paper">E-Paper Warm Grayscale</option>
+        <option value="mode-1bit">1-Bit Crisp Monochrome</option>
+      </select>
+      <button id="toggleOrientationBtn" class="ctrl-btn">Orientation: 800×480 (Landscape)</button>
+      <button id="triggerFlashBtn" class="ctrl-btn">Simulate E-Ink Full Refresh</button>
+    </div>
+  </header>
+
+  <main>
+    <section class="stage">
+      <div class="sticky-device">
+        <div id="einkViewport" class="eink-viewport mode-paper">
+          <!-- Rendered by FrameOS App Simulator below -->
+        </div>
+
+        <!-- Physical GPIO Buttons on the Seeed Studio Sticky -->
+        <div class="gpio-rail" title="Physical GPIO Keys on Seeed Studio Sticky">
+          <div class="gpio-btn" onclick="simHardwareButton(5, 'UP')">
+            UP<br /><span style="font-size:9px;opacity:0.75">GPIO 5</span>
+          </div>
+          <div class="gpio-btn ai-key" onclick="simHardwareButton(4, 'AI')">
+            AI<br /><span style="font-size:9px;opacity:0.85">GPIO 4</span>
+          </div>
+          <div class="gpio-btn" onclick="simHardwareButton(6, 'DOWN')">
+            DOWN<br /><span style="font-size:9px;opacity:0.75">GPIO 6</span>
+          </div>
+        </div>
+
+        <div class="device-label">Seeed Studio reTerminal Sticky • 3.97" E-Paper • ESP32-S3</div>
+      </div>
+    </section>
+
+    <aside class="inspector">
+      <h2>FrameOS Scene State (/c Controls)</h2>
+
+      <div class="field-row">
+        <label for="stateLanguage">Target Language (state.language)</label>
+        <select id="stateLanguage" class="ctrl-select">
+          <option value="ja">Japanese (日本語)</option>
+          <option value="es">Spanish (Español)</option>
+          <option value="fr">French (Français)</option>
+          <option value="de">German (Deutsch)</option>
+          <option value="ko">Korean (한국어)</option>
+        </select>
+      </div>
+
+      <div class="field-row">
+        <label for="stateMode">Study Mode (state.mode)</label>
+        <select id="stateMode" class="ctrl-select">
+          <option value="flashcard">Interactive Flashcard</option>
+          <option value="wordOfTheDay">Word of the Day (Always Revealed)</option>
+        </select>
+      </div>
+
+      <div class="field-row">
+        <label for="stateShowReading">Phonetic Reading (state.showReading)</label>
+        <select id="stateShowReading" class="ctrl-select">
+          <option value="true">Shown (true)</option>
+          <option value="false">Hidden (false)</option>
+        </select>
+      </div>
+
+      <div class="hint-box">
+        <strong>Project Files:</strong><br />
+        • <code>src/app/app.tsx</code> — Main TSX UI<br />
+        • <code>src/app/vocab.ts</code> — Compact ESP32 vocabulary deck<br />
+        • <code>src/controls/app.ts</code> — GPIO &amp; swipe handler<br />
+        • <code>src/scene.template.json</code> — Scene node graph<br /><br />
+        <strong>Build for FrameOS:</strong><br />
+        Run <code>.\scripts\Build-Scene.ps1</code> to generate <code>dist\scenes.json</code> and <code>dist\language-learning-scene.zip</code>.
+      </div>
+    </aside>
+  </main>
+
+  <script>
+    const LANGUAGE_LABELS = {
+      ja: "Japanese • 日本語",
+      es: "Spanish • Español",
+      fr: "French • Français",
+      de: "German • Deutsch",
+      ko: "Korean • 한국어",
+    };
+
+    const DECKS = {
+      ja: [
+        "木漏れ日|こもれび (komorebi)|Noun|Sunlight filtering through trees|森の中で木漏れ日を見上げた。|I looked up at the sunlight filtering through the trees in the forest.|N3",
+        "懐かしい|なつかしい (natsukashii)|Adj|Dearly missed; nostalgic; fond|この曲を聴くと学生時代が懐かしい。|Listening to this song makes me nostalgic for my student days.|N4",
+        "一生懸命|いっしょうけんめい (isshōkenmei)|Adv|With utmost effort; as hard as one can|彼女は毎日一生懸命日本語を勉強している。|She studies Japanese as hard as she can every day.|N4",
+        "臨機応変|りんきおうへん (rinkiōhen)|Noun|Adapting to circumstances; playing it by ear|状況に合わせて臨機応変に対応しましょう。|Let's respond flexibly according to the situation.|N2",
+        "一期一会|いちごいちえ (ichigo-ichie)|Idiom|Once-in-a-lifetime encounter|旅先での出会いを一期一会として大切にする。|Treasure each encounter on a journey as once in a lifetime.|N2",
+      ],
+      es: [
+        "Madrugar|ma·dru·gar|Verb|To wake up / get up early|Mañana tengo que madrugar para tomar el tren.|Tomorrow I have to get up early to catch the train.|B1",
+        "Sobremesa|so·bre·me·sa|Noun|Time spent chatting at the table after a meal|Hicimos una larga sobremesa con café y amigos.|We had a long after-dinner chat over coffee with friends.|B2",
+        "Aprovechar|a·pro·ve·char|Verb|To make the most of; take advantage of|Vamos a aprovechar el buen tiempo para caminar.|Let's make the most of the good weather to go for a walk.|A2",
+        "Desvelarse|des·ve·lar·se|Verb|To stay awake; be unable to sleep|Me desvelé leyendo un libro muy interesante.|I stayed up late reading a very interesting book.|B2",
+        "Cotidiano|co·ti·dia·no|Adj|Daily; everyday; routine|Aprender palabras nuevas es parte de mi vida cotidiana.|Learning new words is part of my everyday life.|B1",
+      ],
+      fr: [
+        "Dépaysement|dé·pa·y·se·ment|Noun|Feeling of being in a new/foreign surrounding|Ce voyage au Japon m'a offert un vrai dépaysement.|This trip to Japan gave me a true change of scenery.|B2",
+        "Flâner|flâ·ner|Verb|To stroll aimlessly and enjoy the surroundings|J'aime flâner dans les petites rues le dimanche.|I love strolling through the narrow streets on Sundays.|B1",
+        "Retrouvailles|re·trou·vailles|Noun|Warm reunion after a long separation|Nos retrouvailles à la gare étaient très émouvantes.|Our reunion at the train station was very moving.|B2",
+        "Quotidien|quo·ti·dien|Adj/Noun|Daily; everyday life|Un petit effort quotidien fait une grande différence.|A small daily effort makes a big difference.|A2",
+        "Épanouir|s'é·pa·nou·ir|Verb|To blossom; thrive; feel fulfilled|Elle s'épanouit pleinement dans son nouveau travail.|She is truly thriving in her new job.|B2",
+      ],
+      de: [
+        "Fernweh|Fern·weh|Noun|Longing for far-off places; wanderlust|Im Herbst bekomme ich immer großes Fernweh.|In autumn I always get a strong longing for distant places.|B1",
+        "Feierabend|Fei·er·abend|Noun|End of the workday; evening free time|Nach der Arbeit genieße ich meinen wohlverdienten Feierabend.|After work I enjoy my well-deserved evening off.|A2",
+        "Fingerspitzengefühl|Fin·ger·spit·zen·ge·fühl|Noun|Tact; intuitive flair; sensitivity|Für diese Verhandlung braucht man viel Fingerspitzengefühl.|You need a lot of tact for this negotiation.|C1",
+        "Gemütlichkeit|Ge·müt·lich·keit|Noun|Warmth, coziness, and good cheer|Das kleine Café strahlt eine wunderbare Gemütlichkeit aus.|The small café radiates a wonderful coziness.|B1",
+        "Vorfreude|Vor·freu·de|Noun|Joyful anticipation|Vorfreude ist bekanntlich die schönste Freude.|Joyful anticipation is known to be the best joy.|B1",
+      ],
+      ko: [
+        "소확행|so-hwak-haeng|Noun|Small but certain happiness|따뜻한 커피 한 잔이 나의 소확행이다.|A warm cup of coffee is my small but certain happiness.|B1",
+        "정 (情)|jeong|Noun|Deep affection, bond, and warmth developed over time|오래 함께 일하면서 동료들과 정이 많이 들었다.|Working together for a long time built a deep bond with my colleagues.|B2",
+        "눈치|nun-chi|Noun|Subtle art of reading the room / social awareness|그 사람은 눈치가 빨라서 분위기를 잘 파악한다.|He is quick-witted and reads the room well.|B1",
+        "설레다|seol-le-da|Verb|To flutter with excitement; feel heart-fluttering anticipation|새로운 여행을 떠나기 전날 밤은 언제나 설렌다.|The night before leaving on a new trip always makes my heart flutter.|A2",
+        "꾸준히|kku-jun-hi|Adv|Steadily; consistently; untiringly|매일 꾸준히 단어를 외우면 실력이 는다.|If you memorize words steadily every day, your skills will improve.|A2",
+      ],
+    };
+
+    const state = {
+      language: "ja",
+      mode: "flashcard",
+      showReading: true,
+      cardIndex: 0,
+      revealed: false,
+      mastered: {},
+      portrait: false,
+    };
+
+    function getCard(lang, rawIndex) {
+      const list = DECKS[lang] || DECKS.ja;
+      const total = list.length;
+      const idx = ((rawIndex % total) + total) % total;
+      const parts = list[idx].split("|");
+      return {
+        word: parts[0],
+        reading: parts[1],
+        pos: parts[2],
+        meaning: parts[3],
+        example: parts[4],
+        translation: parts[5],
+        level: parts[6],
+        index: idx,
+        total,
+        languageLabel: LANGUAGE_LABELS[lang] || LANGUAGE_LABELS.ja,
+      };
+    }
+
+    function flashEink() {
+      const vp = document.getElementById("einkViewport");
+      vp.classList.remove("eink-flash");
+      void vp.offsetWidth;
+      vp.classList.add("eink-flash");
+    }
+
+    function renderFrame() {
+      const vp = document.getElementById("einkViewport");
+      const card = getCard(state.language, state.cardIndex);
+      const isRevealed = state.mode === "wordOfTheDay" || state.revealed;
+      const key = `${state.language}:${card.index}`;
+      const isMastered = Boolean(state.mastered[key]);
+
+      const dateLabel = new Date().toLocaleDateString("en-US", {
+        weekday: "short",
+        month: "short",
+        day: "numeric",
+      });
+
+      vp.innerHTML = `
+        <div class="frame-root">
+          <div class="top-bar">
+            <div class="pill-group">
+              <div class="pill-solid" onclick="cycleLanguage()">${card.languageLabel}</div>
+              <div class="pill-outline">${card.level} • ${card.pos}</div>
+              ${isMastered ? '<div class="pill-mastered">★ Mastered</div>' : ''}
+            </div>
+            <div class="pill-group" style="font-size:14px;font-weight:800;">
+              <span>${dateLabel}</span>
+              <span class="pill-outline">${card.index + 1} / ${card.total}</span>
+            </div>
+          </div>
+
+          <div class="cards-grid">
+            <div class="card-box primary" onclick="toggleReveal()">
+              <div class="section-tag">${state.mode === "wordOfTheDay" ? "Word of the Day" : "Tap Card to Flip"}</div>
+              <div class="hero-word">${card.word}</div>
+              ${state.showReading ? `<div class="reading-text">${card.reading}</div>` : ""}
+            </div>
+
+            <div class="card-box secondary" onclick="toggleReveal()">
+              ${
+                isRevealed
+                  ? `
+                    <div>
+                      <div class="section-tag">Meaning</div>
+                      <div class="meaning-text">${card.meaning}</div>
+                    </div>
+                    <div class="example-block">
+                      <div class="section-tag">Example in Context</div>
+                      <div class="example-text">${card.example}</div>
+                      <div class="translation-text">${card.translation}</div>
+                    </div>
+                  `
+                  : `
+                    <div style="margin:auto;text-align:center;padding:16px;">
+                      <div style="font-size:26px;font-weight:800;margin-bottom:8px;">[ ? ]</div>
+                      <div style="font-size:18px;font-weight:800;">Recall the meaning &amp; example</div>
+                      <div style="font-size:13px;color:#4b5563;margin-top:8px;">Tap here or press the AI button (GPIO 4) to reveal</div>
+                    </div>
+                  `
+              }
+            </div>
+          </div>
+
+          <div class="bottom-bar">
+            <button class="touch-btn" onclick="stepCard(-1)">◀ Prev (UP)</button>
+            <div class="pill-group">
+              <button class="touch-btn solid" onclick="toggleReveal()">
+                ${isRevealed ? "Hide Answer" : "Reveal Answer (AI)"}
+              </button>
+              <button class="touch-btn" onclick="toggleMastered()">
+                ${isMastered ? "★ Saved" : "☆ Mark Known"}
+              </button>
+            </div>
+            <button class="touch-btn" onclick="stepCard(1)">Next (DOWN) ▶</button>
+          </div>
+        </div>
+      `;
+
+      document.getElementById("stateLanguage").value = state.language;
+      document.getElementById("stateMode").value = state.mode;
+      document.getElementById("stateShowReading").value = String(state.showReading);
+    }
+
+    function stepCard(delta) {
+      const total = (DECKS[state.language] || DECKS.ja).length;
+      state.cardIndex = ((state.cardIndex + delta) % total + total) % total;
+      if (state.mode === "flashcard") {
+        state.revealed = false;
+      }
+      flashEink();
+      renderFrame();
+    }
+
+    function toggleReveal() {
+      state.revealed = !state.revealed;
+      renderFrame();
+    }
+
+    function toggleMastered() {
+      const card = getCard(state.language, state.cardIndex);
+      const key = `${state.language}:${card.index}`;
+      state.mastered[key] = !state.mastered[key];
+      renderFrame();
+    }
+
+    function cycleLanguage() {
+      const order = ["ja", "es", "fr", "de", "ko"];
+      state.language = order[(order.indexOf(state.language) + 1) % order.length];
+      state.cardIndex = 0;
+      state.revealed = false;
+      flashEink();
+      renderFrame();
+    }
+
+    function simHardwareButton(pin, label) {
+      if (pin === 5) stepCard(-1);
+      else if (pin === 6) stepCard(1);
+      else toggleReveal();
+    }
+
+    document.getElementById("stateLanguage").addEventListener("change", (e) => {
+      state.language = e.target.value;
+      state.cardIndex = 0;
+      state.revealed = false;
+      flashEink();
+      renderFrame();
+    });
+
+    document.getElementById("stateMode").addEventListener("change", (e) => {
+      state.mode = e.target.value;
+      renderFrame();
+    });
+
+    document.getElementById("stateShowReading").addEventListener("change", (e) => {
+      state.showReading = e.target.value === "true";
+      renderFrame();
+    });
+
+    document.getElementById("einkFilterSelect").addEventListener("change", (e) => {
+      const vp = document.getElementById("einkViewport");
+      vp.classList.remove("mode-paper", "mode-1bit");
+      vp.classList.add(e.target.value);
+    });
+
+    document.getElementById("toggleOrientationBtn").addEventListener("click", (e) => {
+      state.portrait = !state.portrait;
+      const vp = document.getElementById("einkViewport");
+      vp.classList.toggle("portrait", state.portrait);
+      e.target.textContent = state.portrait
+        ? "Orientation: 480×800 (Portrait)"
+        : "Orientation: 800×480 (Landscape)";
+      renderFrame();
+    });
+
+    document.getElementById("triggerFlashBtn").addEventListener("click", flashEink);
+
+    renderFrame();
+  </script>
+</body>
+</html>
